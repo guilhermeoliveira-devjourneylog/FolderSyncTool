@@ -68,29 +68,26 @@ namespace FolderSyncConsole
             Console.WriteLine($"Starting synchronization: {sourceFolder} → {replicaFolder}");
             await RunSyncLoop(sourceFolder, replicaFolder, interval);
         }
-
         private static bool EnsureSourceFolderExists(string sourceFolder)
         {
             if (!Directory.Exists(sourceFolder))
             {
                 Console.WriteLine($"Error: The source folder '{sourceFolder}' does not exist.");
+                LogEvent($"Source folder does not exist: {sourceFolder}");
                 return false;
             }
-
             return true;
         }
-
         private static bool EnsureReplicaFolderExists(string replicaFolder)
         {
             if (!Directory.Exists(replicaFolder))
             {
                 Console.WriteLine($"Error: The replica folder '{replicaFolder}' does not exist.");
+                LogEvent($"Replica folder does not exist: {replicaFolder}");
                 return false;
             }
-
             return true;
         }
-
         private static async Task RunSyncLoop(string source, string replica, int interval)
         {
             while (true)
@@ -103,12 +100,11 @@ namespace FolderSyncConsole
                 catch (Exception ex)
                 {
                     Console.WriteLine($"ERROR: {ex.Message}");
+                    LogEvent($"ERROR: {ex.Message}");
                 }
-
                 await Task.Delay(interval * 1000);
             }
         }
-
         private static void SyncFolders(string source, string replica)
         {
             foreach (var file in Directory.GetFiles(source))
@@ -119,6 +115,7 @@ namespace FolderSyncConsole
                 {
                     File.Copy(file, destFile, true);
                     Console.WriteLine($"Copied/Updated: {file} -> {destFile}");
+                    LogEvent($"Copied/Updated: {file} -> {destFile}");
                 }
             }
 
@@ -129,10 +126,10 @@ namespace FolderSyncConsole
                 {
                     File.Delete(file);
                     Console.WriteLine($"Removed: {file}");
+                    LogEvent($"Removed: {file}");
                 }
             }
         }
-
         private static string GetMD5(string filePath)
         {
             using (var md5 = MD5.Create())
@@ -141,6 +138,11 @@ namespace FolderSyncConsole
                 return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
             }
         }
+        private static void LogEvent(string message)
+        {
+            string logFilePath = "sync_log.txt";
+            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}";
+            File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
+        }
     }
 }
-
