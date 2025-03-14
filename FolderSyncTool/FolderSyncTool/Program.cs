@@ -26,10 +26,16 @@ namespace FolderSyncConsole
             else  
             {
                 Console.WriteLine("Enter the source folder path:");
-                sourceFolder = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(sourceFolder = Console.ReadLine()))
+                {
+                    Console.WriteLine("Invalid input! Please enter a valid source folder path:");
+                }
 
                 Console.WriteLine("Enter the replica folder path:");
-                replicaFolder = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(replicaFolder = Console.ReadLine()))
+                {
+                    Console.WriteLine("Invalid input! Please enter a valid replica folder path:");
+                }
 
                 Console.WriteLine("Enter the synchronization interval (seconds):");
                 while (!int.TryParse(Console.ReadLine(), out interval) || interval <= 0)
