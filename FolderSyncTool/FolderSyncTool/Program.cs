@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace FolderSyncConsole
             string sourceFolder, replicaFolder;
             int interval;
 
-            if (args.Length >= 3)  
+            if (args.Length >= 3)
             {
                 sourceFolder = args[0];
                 replicaFolder = args[1];
@@ -23,7 +24,7 @@ namespace FolderSyncConsole
                     return;
                 }
             }
-            else  
+            else
             {
                 Console.WriteLine("Enter the source folder path:");
                 while (string.IsNullOrWhiteSpace(sourceFolder = Console.ReadLine()))
@@ -31,10 +32,20 @@ namespace FolderSyncConsole
                     Console.WriteLine("Invalid input! Please enter a valid source folder path:");
                 }
 
+                if (!EnsureSourceFolderExists(sourceFolder))
+                {
+                    return;
+                }
+
                 Console.WriteLine("Enter the replica folder path:");
                 while (string.IsNullOrWhiteSpace(replicaFolder = Console.ReadLine()))
                 {
                     Console.WriteLine("Invalid input! Please enter a valid replica folder path:");
+                }
+
+                if (!EnsureReplicaFolderExists(replicaFolder))
+                {
+                    return;
                 }
 
                 Console.WriteLine("Enter the synchronization interval (seconds):");
@@ -44,20 +55,40 @@ namespace FolderSyncConsole
                 }
             }
 
-            if (!Directory.Exists(sourceFolder))
+            if (!EnsureSourceFolderExists(sourceFolder))
             {
-                Console.WriteLine($"Error: The source folder '{sourceFolder}' does not exist.");
                 return;
             }
 
-            if (!Directory.Exists(replicaFolder))
+            if (!EnsureReplicaFolderExists(replicaFolder))
             {
-                Directory.CreateDirectory(replicaFolder);
-                Console.WriteLine($"Created replica folder: {replicaFolder}");
+                return;
             }
 
             Console.WriteLine($"Starting synchronization: {sourceFolder} → {replicaFolder}");
             await RunSyncLoop(sourceFolder, replicaFolder, interval);
+        }
+
+        private static bool EnsureSourceFolderExists(string sourceFolder)
+        {
+            if (!Directory.Exists(sourceFolder))
+            {
+                Console.WriteLine($"Error: The source folder '{sourceFolder}' does not exist.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool EnsureReplicaFolderExists(string replicaFolder)
+        {
+            if (!Directory.Exists(replicaFolder))
+            {
+                Console.WriteLine($"Error: The replica folder '{replicaFolder}' does not exist.");
+                return false;
+            }
+
+            return true;
         }
 
         private static async Task RunSyncLoop(string source, string replica, int interval)
@@ -112,3 +143,4 @@ namespace FolderSyncConsole
         }
     }
 }
+
