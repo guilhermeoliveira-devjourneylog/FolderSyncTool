@@ -74,7 +74,35 @@ namespace FolderSyncConsole
 
         private static void SyncFolders(string source, string replica)
         {
-            // Sync logic 
+            foreach (var file in Directory.GetFiles(source))
+            {
+                string destFile = Path.Combine(replica, Path.GetFileName(file));
+
+                if (!File.Exists(destFile) || GetMD5(file) != GetMD5(destFile))
+                {
+                    File.Copy(file, destFile, true);
+                    Console.WriteLine($"Copied/Updated: {file} -> {destFile}");
+                }
+            }
+
+            foreach (var file in Directory.GetFiles(replica))
+            {
+                string sourceFile = Path.Combine(source, Path.GetFileName(file));
+                if (!File.Exists(sourceFile))
+                {
+                    File.Delete(file);
+                    Console.WriteLine($"Removed: {file}");
+                }
+            }
+        }
+
+        private static string GetMD5(string filePath)
+        {
+            using (var md5 = MD5.Create())
+            using (var stream = File.OpenRead(filePath))
+            {
+                return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+            }
         }
     }
 }
