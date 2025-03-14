@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Replica\" />
+    <Folder Include="Source\" />
+  </ItemGroup>
+
 </Project>
