@@ -8,6 +8,9 @@ namespace FolderSyncConsole
 {
     class Program
     {
+        private static readonly string logFilePath = "sync_log.txt";
+        private static readonly int logRetentionDays = 3;
+
         static async Task Main(string[] args)
         {
             string sourceFolder, replicaFolder;
@@ -68,6 +71,7 @@ namespace FolderSyncConsole
             Console.WriteLine($"Starting synchronization: {sourceFolder} → {replicaFolder}");
             await RunSyncLoop(sourceFolder, replicaFolder, interval);
         }
+
         private static bool EnsureSourceFolderExists(string sourceFolder)
         {
             if (!Directory.Exists(sourceFolder))
@@ -78,6 +82,7 @@ namespace FolderSyncConsole
             }
             return true;
         }
+
         private static bool EnsureReplicaFolderExists(string replicaFolder)
         {
             if (!Directory.Exists(replicaFolder))
@@ -88,12 +93,14 @@ namespace FolderSyncConsole
             }
             return true;
         }
+
         private static async Task RunSyncLoop(string source, string replica, int interval)
         {
             while (true)
             {
                 try
                 {
+                    RotateLogFile();
                     SyncFolders(source, replica);
                     Console.WriteLine($"Synchronization completed. Next execution in {interval} seconds...");
                 }
@@ -105,6 +112,7 @@ namespace FolderSyncConsole
                 await Task.Delay(interval * 1000);
             }
         }
+
         private static void SyncFolders(string source, string replica)
         {
             foreach (var file in Directory.GetFiles(source))
@@ -130,6 +138,7 @@ namespace FolderSyncConsole
                 }
             }
         }
+
         private static string GetMD5(string filePath)
         {
             using (var md5 = MD5.Create())
@@ -138,11 +147,26 @@ namespace FolderSyncConsole
                 return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
             }
         }
+
         private static void LogEvent(string message)
         {
-            string logFilePath = "sync_log.txt";
             string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}";
             File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
+        }
+
+        private static void RotateLogFile()
+        {
+            if (File.Exists(logFilePath))
+            {
+                FileInfo logFile = new FileInfo(logFilePath);
+                if (logFile.LastWriteTime < DateTime.Now.AddDays(-logRetentionDays))
+                {
+                    string archiveLog = $"sync_log_{DateTime.Now:yyyyMMddHHmmss}.txt";
+                    File.Move(logFilePath, archiveLog);
+                    File.Create(logFilePath).Close();
+                    Console.WriteLine($"Log file rotated: {archiveLog}");
+                }
+            }
         }
     }
 }
