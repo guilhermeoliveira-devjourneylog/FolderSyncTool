@@ -80,7 +80,7 @@ namespace FolderSyncConsole
             if (!Directory.Exists(sourceFolder))
             {
                 Console.WriteLine($"Error: The source folder '{sourceFolder}' does not exist.");
-                LogEvent($"Source folder does not exist: {sourceFolder}");
+                LogEvent(logFilePath, $"Source folder does not exist: {sourceFolder}");
                 return false;
             }
             return true;
@@ -91,7 +91,7 @@ namespace FolderSyncConsole
             if (!Directory.Exists(replicaFolder))
             {
                 Console.WriteLine($"Error: The replica folder '{replicaFolder}' does not exist.");
-                LogEvent($"Replica folder does not exist: {replicaFolder}");
+                LogEvent(logFilePath, $"Replica folder does not exist: {replicaFolder}");
                 return false;
             }
             return true;
@@ -110,7 +110,7 @@ namespace FolderSyncConsole
                 catch (Exception ex)
                 {
                     Console.WriteLine($"ERROR: {ex.Message}");
-                    LogEvent($"ERROR: {ex.Message}");
+                    LogEvent(logFilePath, $"ERROR: {ex.Message}");
                 }
                 await Task.Delay(interval * 1000);
             }
@@ -126,7 +126,7 @@ namespace FolderSyncConsole
                 {
                     File.Copy(file, destFile, true);
                     Console.WriteLine($"Copied/Updated: {file} -> {destFile}");
-                    LogEvent($"Copied/Updated: {file} -> {destFile}");
+                    LogEvent(logFilePath, $"Copied/Updated: {file} -> {destFile}");
                 }
             }
 
@@ -137,7 +137,7 @@ namespace FolderSyncConsole
                 {
                     File.Delete(file);
                     Console.WriteLine($"Removed: {file}");
-                    LogEvent($"Removed: {file}");
+                    LogEvent(logFilePath, $"Removed: {file}");
                 }
             }
         }
@@ -151,7 +151,7 @@ namespace FolderSyncConsole
             }
         }
 
-        internal static void LogEvent(string message)
+        internal static void LogEvent(string logFilePath, string message)
         {
             string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}";
             File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
@@ -174,4 +174,3 @@ namespace FolderSyncConsole
         }
     }
 }
-
