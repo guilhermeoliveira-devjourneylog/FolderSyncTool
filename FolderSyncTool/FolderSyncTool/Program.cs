@@ -116,7 +116,7 @@ namespace FolderSyncConsole
             }
         }
 
-        private static void SyncFolders(string source, string replica)
+        internal static void SyncFolders(string source, string replica)
         {
             foreach (var file in Directory.GetFiles(source))
             {
