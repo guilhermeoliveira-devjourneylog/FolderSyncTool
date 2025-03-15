@@ -103,7 +103,7 @@ namespace FolderSyncConsole
             {
                 try
                 {
-                    RotateLogFile();
+                    RotateLogFile(logFilePath);
                     SyncFolders(source, replica);
                     Console.WriteLine($"Synchronization completed. Next execution in {interval} seconds...");
                 }
@@ -157,17 +157,18 @@ namespace FolderSyncConsole
             File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
         }
 
-        internal static void RotateLogFile()
+        internal static void RotateLogFile(string logFilePath)
         {
             if (File.Exists(logFilePath))
             {
                 FileInfo logFile = new FileInfo(logFilePath);
                 if (logFile.LastWriteTime < DateTime.Now.AddDays(-logRetentionDays))
                 {
-                    string archiveLog = $"sync_log_{DateTime.Now:yyyyMMddHHmmss}.txt";
+                    string archiveLog = Path.Combine(Path.GetDirectoryName(logFilePath), $"sync_log_{DateTime.Now:yyyyMMddHHmmss}.txt");
+                    Console.WriteLine($"Rotating log file: {logFilePath} -> {archiveLog}");
+
                     File.Move(logFilePath, archiveLog);
                     File.Create(logFilePath).Close();
-                    Console.WriteLine($"Log file rotated: {archiveLog}");
                 }
             }
         }
