@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("FolderSyncTests")]
 
 namespace FolderSyncConsole
 {
@@ -72,7 +75,7 @@ namespace FolderSyncConsole
             await RunSyncLoop(sourceFolder, replicaFolder, interval);
         }
 
-        private static bool EnsureSourceFolderExists(string sourceFolder)
+        internal static bool EnsureSourceFolderExists(string sourceFolder)
         {
             if (!Directory.Exists(sourceFolder))
             {
@@ -83,7 +86,7 @@ namespace FolderSyncConsole
             return true;
         }
 
-        private static bool EnsureReplicaFolderExists(string replicaFolder)
+        internal static bool EnsureReplicaFolderExists(string replicaFolder)
         {
             if (!Directory.Exists(replicaFolder))
             {
@@ -148,13 +151,13 @@ namespace FolderSyncConsole
             }
         }
 
-        private static void LogEvent(string message)
+        internal static void LogEvent(string message)
         {
             string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}";
             File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
         }
 
-        private static void RotateLogFile()
+        internal static void RotateLogFile()
         {
             if (File.Exists(logFilePath))
             {
@@ -170,3 +173,4 @@ namespace FolderSyncConsole
         }
     }
 }
+
