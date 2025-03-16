@@ -5,10 +5,10 @@ A tool for one-way folder synchronization, ensuring that a **replica folder** re
 The documentation for this project is available in the following locations:
 
 - **FolderSyncTool Documentation:**  
-  📄 [`FolderSyncTool/doc.md`](FolderSyncTool/doc.md)
+  📄 [`FolderSyncTool/FolderSyncTool/doc.md`](FolderSyncTool/FolderSyncTool/doc.md)
 
 - **FolderSyncTests Documentation:**  
-  📄 [`FolderSyncTests/doc.md`](FolderSyncTests/doc.md)
+  📄 [`FolderSyncTool/FolderSyncTests/doc.md`](FolderSyncTool/FolderSyncTests/doc.md)
 
 ## **🚀 Features**
 ✔ One-way synchronization from source to replica.  
